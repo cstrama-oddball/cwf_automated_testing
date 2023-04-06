@@ -284,7 +284,7 @@ def create_test_result_folder():
 
     return new_folder + "/"
 
-#TODO: create a better way to store the window title
+#TODO: create a better way to store the window titles
 win2find = 'Session A - [24 x 80]'
 
 whnd = win32gui.FindWindowEx(None, None, None, win2find)
