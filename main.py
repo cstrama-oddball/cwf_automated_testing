@@ -279,7 +279,7 @@ def create_test_result_folder():
     timestamp = now.strftime("%Y-%m-%d_%H-%M-%S")
 
     # Create a new folder with the timestamp as its name
-    new_folder = os.path.join(os.getcwd(), timestamp)
+    new_folder = os.path.join(os.getcwd(), "results/", timestamp)
     os.mkdir(new_folder)
 
     return new_folder + "/"
