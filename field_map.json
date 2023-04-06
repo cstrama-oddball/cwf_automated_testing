@@ -1,0 +1,64 @@
+{
+    "fields":[
+        {
+            "test_case": [
+                {
+                    "change_request": "CR"
+                },
+                {
+                    "business_requirement": "BR"
+                },
+                {
+                    "user_story": "US"
+                },
+                {
+                    "test_case": "TC"
+                },
+                {
+                    "final_action": "FA"
+                },
+                {
+                    "system": "SYS"
+                },
+                {
+                    "compare": "COMP"
+                }
+            ]
+        },
+        {
+            "search": [
+                {
+                    "name":"HIC",
+                    "tab_pos":0
+                },
+                {
+                    "name":"ICN",
+                    "tab_pos": 1
+                },
+                {
+                    "name": "TRAN",
+                    "tab_pos": 2
+                },
+                {
+                    "name": "ANYWHERE",
+                    "tab_pos":3
+                },
+                {
+                    "name": "results",
+                    "tab_pos": 4
+                }
+            ]
+        },
+        {
+            "page 1": [
+                {
+                    "name": "DOC-CTL-NO",
+                    "tab_pos": 15
+                }
+            ],
+            "page 2": [
+                
+            ]
+        }
+    ]
+}
