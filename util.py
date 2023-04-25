@@ -13,9 +13,9 @@ class ClaimsData:
         self.data_header = data_header
         self.data = line.split(COMMA)
 
-def get_field_map():
+def get_field_map(filename: str):
     data = None
-    with open('field_map.json') as f:
+    with open(filename) as f:
         # Load the contents of the file into a Python object
         data = json.load(f)
 

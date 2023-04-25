@@ -182,6 +182,12 @@ def send_f4(whnd: int):
 
     return
 
+def send_f5(whnd: int):
+    # Send the F5 key press to the window
+    _send_controls_keys(win32con.VK_F5, whnd)
+
+    return
+
 def send_f9(whnd: int):
     # Send the F4 key press to the window
     _send_controls_keys(win32con.VK_F9, whnd)
@@ -213,7 +219,7 @@ def find_key(field_map, key: str):
                     
     return EMPTY_STRING
 
-def search_for_claim(claim: util.ClaimsData, field_map, whnd: int):
+def search_for_claim(claim: util.ClaimsData, field_map, whnd: int, system_index: int):
     result_pos = -1
     result_tab_pos = -1
     for map in field_map['fields']:
@@ -227,7 +233,7 @@ def search_for_claim(claim: util.ClaimsData, field_map, whnd: int):
                         elif ftk == "tab_pos":
                             result_tab_pos = ftv
 
-    send_data("search", field_map, ["results"], claim, whnd)
+    send_data("search", field_map, ["results"], claim, whnd, system_index)
 
     send_f4(whnd)
     time.sleep(1)
@@ -239,19 +245,20 @@ def search_for_claim(claim: util.ClaimsData, field_map, whnd: int):
 
     return
 
-def fill_out_page(page: str, claim: util.ClaimsData, field_map, whnd):
-    send_data(page, field_map, [], claim, whnd)
+def fill_out_page(page: str, claim: util.ClaimsData, field_map, whnd, system_index: int):
+    send_data(page, field_map, [], claim, whnd, system_index)
     send_enter(whnd)
 
     return
 
-def send_data(field_group: str, field_map, ignore_fields, claim: util.ClaimsData, whnd: int):
+def send_data(field_group: str, field_map, ignore_fields, claim: util.ClaimsData, whnd: int, system_index: int):
     for map in field_map['fields']:
         for field_type in map:
             if field_type == field_group:
                 for field_type_field in map[field_type]:
                     data_col = -1
                     tab_pos = -1
+                    same_system = False
                     for ftk, ftv in field_type_field.items():
                         if ftk == "name":
                             if ftv in ignore_fields:
@@ -260,8 +267,10 @@ def send_data(field_group: str, field_map, ignore_fields, claim: util.ClaimsData
                                 data_col = claim.data_header.fields.index(ftv)
                         elif ftk == "tab_pos":
                             tab_pos = ftv
+                        elif ftk == "system":
+                            same_system = ftv == claim.data[system_index]
                 
-                    if data_col > -1:
+                    if data_col > -1 and same_system:
                         if claim.data[data_col].strip().lower() != SKIP_FIELD_VALUE:
                             start_top_left(whnd)
                             for x in range(0,tab_pos):
@@ -298,7 +307,8 @@ if not (whnd == 0):
 
     test_result_folder = create_test_result_folder()
 
-    field_map = util.get_field_map()
+    filename = 'field_map.json'
+    field_map = util.get_field_map(filename)
 
     system_identifier = "system"
     compare_identifier = "compare"
@@ -318,21 +328,24 @@ if not (whnd == 0):
         compare_index = claim.data_header.fields.index(compare_col)
         launch_system(claim.data[system_index], whnd)
 
-        search_for_claim(claim, field_map, whnd)
+        search_for_claim(claim, field_map, whnd, system_index)
 
-        fill_out_page('page 1', claim, field_map, whnd)
-        fill_out_page('page 2', claim, field_map, whnd)
+        fill_out_page('page 1', claim, field_map, whnd, system_index)
+        fill_out_page('page 2', claim, field_map, whnd, system_index)
 
         final_action = find_key(field_map, final_action_identifier)
 
         final_action_col = claim.data_header.fields.index(final_action)
 
         if claim.data[final_action_col] == "F4":
-            send_f4(whnd)
-            time.sleep(1)
-            file = take_screenshot(whnd, [change_request_identifier, business_requirement_identifier, user_story_identifier, test_case_identifier], claim, field_map, test_result_folder)
-            time.sleep(1)
-            compare_result_text(test_result_folder + file, claim.data[compare_index])
-            send_f3(whnd)
+            send_f4(whnd)            
+        elif claim.data[final_action_col] == "F5":
+            send_f5(whnd)
+
+        time.sleep(1)
+        file = take_screenshot(whnd, [change_request_identifier, business_requirement_identifier, user_story_identifier, test_case_identifier], claim, field_map, test_result_folder)
+        time.sleep(1)
+        compare_result_text(test_result_folder + file, claim.data[compare_index])
+        send_f3(whnd)
 else:
     print("Window not found")
