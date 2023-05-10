@@ -7,11 +7,15 @@ NEWLINE = "\n"
 class ClaimsDataHeader:
     def __init__(self, line: str, ) -> None:
         self.fields = line.split(COMMA)
+        for x in range(0,len(self.fields)):
+            self.fields[x] = self.fields[x].strip()
 
 class ClaimsData:
     def __init__(self, data_header: ClaimsDataHeader, line: str) -> None:
         self.data_header = data_header
         self.data = line.split(COMMA)
+        for x in range(0,len(self.data)):
+            self.data[x] = self.data[x].strip()
 
 def get_field_map(filename: str):
     data = None
@@ -40,6 +44,9 @@ def read_claims_data():
 
 def write_file(file: str, data):
     _write_file_data(file, data, "w")
+
+def append_file(file: str, data):
+    _write_file_data(file, data, "a")
 
 def _write_file_data(file: str, data, method: str):
     f = open(file,method)

@@ -1,0 +1,164 @@
+{
+    "fields":[
+        {
+            "test_case": [
+                {
+                    "change_request": "CR"
+                },
+                {
+                    "business_requirement": "BR"
+                },
+                {
+                    "user_story": "US"
+                },
+                {
+                    "test_case": "TC"
+                },
+                {
+                    "final_action": "FA"
+                },
+                {
+                    "system": "SYS"
+                },
+                {
+                    "compare": "COMP"
+                },
+                {
+                    "transaction_type": "TRAN"
+                }
+            ]
+        },
+        {
+            "search": [
+                {
+                    "name":"HIC",
+                    "tab_pos":0,
+                    "system": "HITF"
+                },
+                {
+                    "name":"ICN",
+                    "tab_pos": 1,
+                    "system": "HITF"
+                },
+                {
+                    "name": "TRAN",
+                    "tab_pos": 2,
+                    "system": "HITF"
+                },
+                {
+                    "name": "ANYWHERE",
+                    "tab_pos":3,
+                    "system": "HITF"
+                },
+                {
+                    "name": "results",
+                    "tab_pos": 4,
+                    "system": "HITF"
+                },
+                {
+                    "name":"submit",
+                    "tab_pos": 0,
+                    "system":"HITF",
+                    "value": "<f4>"
+                },
+                {
+                    "name":"select",
+                    "tab_pos": 0,
+                    "system":"HITF",
+                    "value": "<tab>|<tab>|<tab>|<tab>|<enter>"
+                },
+                {
+                    "name":"CN",
+                    "tab_pos":0,
+                    "system": "HIAB"
+                },
+                {
+                    "name":"submit",
+                    "tab_pos": 0,
+                    "system":"HIAB"
+                },
+                {
+                    "name":"select",
+                    "tab_pos": 0,
+                    "system":"HIAB",
+                    "value": "<enter>"
+                }
+            ]
+        },
+        {
+            "page 1": [
+                {
+                    "name" : "HICN",
+                    "tab_pos": 0,
+                    "system": "HITF",
+                    "tran": "HUSP"
+                },
+                {
+                    "name" : "HI-CLAIM-NUM",
+                    "tab_pos": 0,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                },
+                {
+                    "name": "DOC-CTL-NO",
+                    "tab_pos": 15,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                },
+                {
+                    "name": "MBI",
+                    "tab_pos": 47,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                },
+                {
+                    "name": "DT-BILLED",
+                    "tab_pos": 33,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                },
+                {
+                    "name": "CN",
+                    "tab_pos": 0,
+                    "system": "HIAB",
+                    "tran": ""
+                },
+                {
+                    "name": "NM",
+                    "tab_pos": 0,
+                    "system": "HIAB",
+                    "tran": ""
+                }
+            ],
+            "page 2": [
+                
+            ],
+            "page 3": [
+                {
+                    "name": "SERV-FROM-DT (3)",
+                    "tab_pos": 31,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                },
+                {
+                    "name": "SERV-THRU-DT (3)",
+                    "tab_pos": 32,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                },
+                {
+                    "name": "TOT-CASH-APP (3)",
+                    "tab_pos": 56,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                },
+                {
+                    "name": "ALLOWED-CHARGES (3)",
+                    "tab_pos": 21,
+                    "system": "HITF",
+                    "tran": "HUBC"
+                }
+            ]
+        }
+    ]
+}
