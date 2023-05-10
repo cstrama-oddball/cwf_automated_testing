@@ -20,6 +20,7 @@ import cv2
 import numpy as np
 
 last_tab = -1
+failed_count = 0
 
 def compare_result(search_for: str, filename: str, test_result_folder: str):
     if DEBUG:
@@ -52,6 +53,7 @@ def compare_result(search_for: str, filename: str, test_result_folder: str):
     util.write_file(test_result_folder + filename + '.txt', msg, test_result_folder)
 
 def compare_result_text(filename: str, message_text: str, test_result_folder: str, test_case: str, claim: util.ClaimsData, field_map):
+    global failed_count
     # Open the image file
     image = Image.open(filename)
 
@@ -66,11 +68,12 @@ def compare_result_text(filename: str, message_text: str, test_result_folder: st
 
     result = "Passed" if message_text in text else "Failed"
 
-    text = text + "\n      Expected: " + message_text
+    text = "Expected: " + message_text + "\n Results stored in " + filename + '.' + result + '.txt'
 
     util.write_file(filename + '.' + result + '.txt', result)
 
     if result == "Failed":
+        failed_count = failed_count + 1
         col = find_key(field_map, test_case)
         index = claim.data_header.fields.index(col)
         util.append_file(test_result_folder + "_failed_test_summary.txt", "test number: " + claim.data[index] + " - " + text + "\n")
@@ -397,6 +400,7 @@ def main(system: str, tran: str):
             count = count + 1
             print("Finished test: " + str(count) + " of " + str(len(claims)))
 
+        print("Total failed tests: " + str(failed_count))
         print("Tests completed")
         now = datetime.now()
         print(now.strftime("%d/%m/%Y %H:%M:%S"))
