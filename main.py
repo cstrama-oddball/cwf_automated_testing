@@ -225,6 +225,12 @@ def send_f9(whnd: int):
 
     return
 
+def send_f12(whnd: int):
+    # Send the F12 key press to the window
+    _send_controls_keys(win32con.VK_F12, whnd)
+
+    return
+
 def _send_controls_keys(key: int, whnd: int):
     win32gui.SetForegroundWindow(whnd) 
     time.sleep(.1)
@@ -297,6 +303,7 @@ def send_data(field_group: str, field_map, ignore_fields, claim: util.ClaimsData
                 for field_type_field in map[field_type]:
                     data_col = -1
                     tab_pos = -1
+                    length = 0
                     for ftk, ftv in field_type_field.items():
                         if ftk == "name":
                             if ftv in ignore_fields:
@@ -305,6 +312,8 @@ def send_data(field_group: str, field_map, ignore_fields, claim: util.ClaimsData
                                 data_col = claim.data_header.fields.index(ftv)
                         elif ftk == "tab_pos":
                             tab_pos = ftv
+                        elif ftk == "length":
+                            length = int(ftv)
                 
                     if data_col > -1:
                         if claim.data[data_col].strip().lower() != SKIP_FIELD_VALUE:
@@ -312,6 +321,10 @@ def send_data(field_group: str, field_map, ignore_fields, claim: util.ClaimsData
                             for x in range(0,tab_pos):
                                 send_tab(whnd)
                             send_keystrokes(claim.data[data_col], whnd)
+                            l = len(claim.data[data_col])
+
+                            if l < length:
+                                send_keystrokes(util.pad_char(length - l, " "), whnd)
                             last_tab = tab_pos
                             time.sleep(.5)
 
@@ -362,7 +375,7 @@ def main(system: str, tran: str):
         compare_col = find_key(field_map, compare_identifier)
         tran_col = find_key(field_map, transaction_identifier)
 
-        claims = util.read_claims_data()
+        claims = util.read_claims_data(tran.lower().strip())
 
         now = datetime.now()
         print(now.strftime("%d/%m/%Y %H:%M:%S"))
@@ -381,6 +394,13 @@ def main(system: str, tran: str):
             fill_out_page('page 1', claim, field_map, whnd)
             fill_out_page('page 2', claim, field_map, whnd)
             fill_out_page('page 3', claim, field_map, whnd)
+            fill_out_page('page 4', claim, field_map, whnd)
+            fill_out_page('page 5', claim, field_map, whnd)
+            fill_out_page('page 6', claim, field_map, whnd)
+            fill_out_page('page 7', claim, field_map, whnd)
+            fill_out_page('page 8', claim, field_map, whnd)
+            fill_out_page('page 9', claim, field_map, whnd)
+            fill_out_page('page 10', claim, field_map, whnd)
 
             final_action = find_key(field_map, final_action_identifier)
 
@@ -390,6 +410,8 @@ def main(system: str, tran: str):
                 send_f4(whnd)            
             elif claim.data[final_action_col] == "F5":
                 send_f5(whnd)
+            elif claim.data[final_action_col] == "F12":
+                send_f12(whnd)
 
             time.sleep(1)
             file = take_screenshot(whnd, [change_request_identifier, business_requirement_identifier, user_story_identifier, test_case_identifier], claim, field_map, test_result_folder)
@@ -409,6 +431,6 @@ def main(system: str, tran: str):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        main("HITF", "HUBC")
+        main("HITF", "HUOP")
     else:
         main(sys.argv[1], sys.argv[2])

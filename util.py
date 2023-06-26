@@ -25,9 +25,9 @@ def get_field_map(filename: str):
 
     return data
 
-def read_claims_data():
+def read_claims_data(tran: str):
     result = []
-    with open('test.csv', 'r') as f:
+    with open(tran + '_test.csv', 'r') as f:
         first = True
         data_header = None
         # Loop over each line in the file
@@ -52,3 +52,10 @@ def _write_file_data(file: str, data, method: str):
     f = open(file,method)
     f.write(data)
     f.close()
+
+def pad_char(l: int, c: str):
+    result = ""
+    for x in range(0,l):
+        result = result + c
+
+    return result
