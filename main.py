@@ -4,12 +4,12 @@ import win32api
 import win32con
 import os
 import sys
+import re
 from PIL import ImageGrab
 from pynput.keyboard import Controller
 from datetime import datetime
 import pytesseract
 from PIL import Image
-
 
 DEBUG = False
 EMPTY_STRING = ''
@@ -19,8 +19,34 @@ TOP_LEFT_FIELD = "{"
 import cv2
 import numpy as np
 
-last_tab = -1
+last_tab = 0
 failed_count = 0
+loop_counts = []
+
+class Dynamic_Data:
+    def __init__(self, fname: str) -> None:
+        self.field_name = fname
+        self.current_count = 0
+
+def find_dynamic_data(fname: str) -> Dynamic_Data:
+    found = False
+    result = None
+    for dd in loop_counts:
+        if dd.field_name == fname:
+            found = True
+            result = dd
+            break
+    if not found:
+        result = Dynamic_Data(fname)
+        loop_counts.append(result)
+
+    return result
+
+def count_consecutive_question_marks(string):
+    pattern = r'\?+'
+    matches = re.findall(pattern, string)
+    max_count = max(len(match) for match in matches) if matches else 0
+    return max_count
 
 def compare_result(search_for: str, filename: str, test_result_folder: str):
     if DEBUG:
@@ -153,7 +179,6 @@ def send_keystrokes(keys, whnd: int, pause = True):
         elif key == '*':
             win32api.keybd_event(win32con.VK_SHIFT, 0, 0, 0)
             win32api.keybd_event(ord('8'), 0, 0, 0)
-            #win32api.keybd_event(ord('8'), 0, win32con.KEYEVENTF_KEYUP, 0)
             win32api.keybd_event(win32con.VK_SHIFT, 0, win32con.KEYEVENTF_KEYUP, 0)
         elif key == "-" or key == TOP_LEFT_FIELD or key == ".":
             keyboard = Controller()
@@ -180,6 +205,17 @@ def start_top_left(whnd: int):
 def send_enter(whnd: int):
     # Send the Enter key press to the window
     _send_controls_keys(win32con.VK_RETURN, whnd)
+
+    return
+
+def send_escape(whnd: int):
+
+    _send_controls_keys(win32con.VK_RCONTROL, whnd)
+
+    return
+
+def send_shift_escape(whnd: int):
+    _send_controls_keys(win32con.VK_RCONTROL, whnd)
 
     return
 
@@ -219,8 +255,14 @@ def send_f5(whnd: int):
 
     return
 
+def send_f8(whnd: int):
+    # Send the F8 key press to the window
+    _send_controls_keys(win32con.VK_F8, whnd)
+
+    return
+
 def send_f9(whnd: int):
-    # Send the F4 key press to the window
+    # Send the F9 key press to the window
     _send_controls_keys(win32con.VK_F9, whnd)
 
     return
@@ -259,6 +301,8 @@ def find_key(field_map, key: str):
 def perform_search(claim: util.ClaimsData, field_map, whnd: int, system_index: int, tran_index: int):
     result_pos = -1
     result_tab_pos = -1
+    submit_keys = []
+    select_keys = []
     for map in field_map['fields']:
         for field_type in map:
             if field_type == "search":
@@ -276,11 +320,14 @@ def perform_search(claim: util.ClaimsData, field_map, whnd: int, system_index: i
     for submit_key in submit_keys:
         if submit_key.strip().lower() == "<f4>":
             send_f4(whnd)
+        elif submit_key.strip().lower() == "<enter>":
+            send_enter(whnd)
     time.sleep(1)
     
-    for x in range(0,result_tab_pos):
-        send_tab(whnd)
-    send_keystrokes(claim.data[result_pos], whnd)
+    if result_tab_pos > -1:
+        for x in range(0,result_tab_pos):
+            send_tab(whnd)
+        send_keystrokes(claim.data[result_pos], whnd)
     for select_key in select_keys:
         if select_key.strip().lower() == "<enter>":
             send_enter(whnd)
@@ -289,9 +336,17 @@ def perform_search(claim: util.ClaimsData, field_map, whnd: int, system_index: i
 
 def fill_out_page(page: str, claim: util.ClaimsData, field_map, whnd):
     global last_tab
-    last_tab = -1
+    last_tab = 0
     send_data(page, field_map, [], claim, whnd)
-    send_enter(whnd)
+
+    k = find_key(field_map, "advance_page")
+
+    advance_key = claim.data[claim.data_header.fields.index(k)].strip().lower()
+
+    if advance_key == "<enter>":
+        send_enter(whnd)
+    elif advance_key == "<f8>":
+        send_f8(whnd)
 
     return
 
@@ -317,14 +372,30 @@ def send_data(field_group: str, field_map, ignore_fields, claim: util.ClaimsData
                 
                     if data_col > -1:
                         if claim.data[data_col].strip().lower() != SKIP_FIELD_VALUE:
-                            start_top_left(whnd)
-                            for x in range(0,tab_pos):
-                                send_tab(whnd)
-                            send_keystrokes(claim.data[data_col], whnd)
-                            l = len(claim.data[data_col])
+                            data = claim.data[data_col]
+                            if "?" in claim.data[data_col]:
+                                current_dd = find_dynamic_data(claim.data_header.fields[data_col])
+                                r_len = count_consecutive_question_marks(claim.data[data_col])
+                                r_index = claim.data[data_col].find("?")
+                                r_data = str(current_dd.current_count).zfill(r_len)
+                                current_dd.current_count = current_dd.current_count + 1
+                                data = data[0:r_index] + r_data + data[r_index + r_len:]
+
+                            l = len(data)
+                            tab_diff = tab_pos - last_tab
+
+                            if tab_diff < 0:
+                                tab_diff = tab_diff * -1
+                                for x in range(0,tab_diff + 1):
+                                    send_reverse_tab(whnd) 
+                            else:
+                                for x in range(0,tab_diff):
+                                    send_tab(whnd)
+                            send_keystrokes(data, whnd)                            
 
                             if l < length:
                                 send_keystrokes(util.pad_char(length - l, " "), whnd)
+                            send_reverse_tab(whnd) 
                             last_tab = tab_pos
                             time.sleep(.5)
 
@@ -383,7 +454,7 @@ def main(system: str, tran: str):
         count = 0
 
         for claim in claims:
-            last_tab = -1
+            last_tab = 0
             system_index = claim.data_header.fields.index(system_col)
             compare_index = claim.data_header.fields.index(compare_col)
             tran_index = claim.data_header.fields.index(tran_col)
@@ -417,7 +488,15 @@ def main(system: str, tran: str):
             file = take_screenshot(whnd, [change_request_identifier, business_requirement_identifier, user_story_identifier, test_case_identifier], claim, field_map, test_result_folder)
             time.sleep(1)
             compare_result_text(test_result_folder + file, claim.data[compare_index], test_result_folder, test_case_identifier, claim, field_map)
-            send_f3(whnd)
+            
+            k = find_key(field_map, "exit_system")
+
+            exit_system = claim.data[claim.data_header.fields.index(k)].strip().lower()
+
+            if exit_system == "f3":
+                send_f3(whnd)
+            elif exit_system == "<escape>":
+                send_escape(whnd)
 
             count = count + 1
             print("Finished test: " + str(count) + " of " + str(len(claims)))
@@ -431,6 +510,6 @@ def main(system: str, tran: str):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        main("HITF", "HUOP")
+        main("HIAB", "BENE")
     else:
         main(sys.argv[1], sys.argv[2])

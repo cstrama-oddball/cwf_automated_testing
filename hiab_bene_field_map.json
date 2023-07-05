@@ -1,0 +1,66 @@
+{
+    "fields":[
+        {
+            "test_case": [
+                {
+                    "change_request": "CR"
+                },
+                {
+                    "business_requirement": "BR"
+                },
+                {
+                    "user_story": "US"
+                },
+                {
+                    "test_case": "TC"
+                },
+                {
+                    "final_action": "FA"
+                },
+                {
+                    "system": "SYS"
+                },
+                {
+                    "compare": "COMP"
+                },
+                {
+                    "search_compare": "SCOMP"
+                },
+                {
+                    "transaction_type": "TRAN"
+                },
+                {
+                    "exit_system": "exit"
+                }
+            ]
+        },
+        {
+            "search": [
+                {
+                    "name":"CN",
+                    "tab_pos": 0,
+                    "system": "HIAB",
+                    "length": 12
+                },
+                {
+                    "name":"submit",
+                    "tab_pos": 0,
+                    "system":"HIAB"
+                }
+            ]
+        },
+        {
+            "post page": [
+                {
+                    "advance_page":"advance"
+                }
+            ]
+        },
+        {
+            "page 1": [
+            ],
+            "page 2": [            
+            ]
+        }
+    ]
+}

@@ -31,28 +31,16 @@
         {
             "search": [
                 {
-                    "name":"HIC",
+                    "name":"INQUIRY TYPE",
                     "tab_pos":0,
-                    "system": "HITF",
-                    "length": 19
-                },
-                {
-                    "name":"ICN",
-                    "tab_pos": 1,
-                    "system": "HITF",
-                    "length": 23
-                },
-                {
-                    "name": "TRAN",
-                    "tab_pos": 2,
-                    "system": "HITF",
+                    "system": "HIMR",
                     "length": 4
                 },
                 {
-                    "name": "ANYWHERE",
-                    "tab_pos":3,
-                    "system": "HITF",
-                    "length": 28
+                    "name":"KEY",
+                    "tab_pos": 1,
+                    "system": "HIMR",
+                    "length": 12
                 },
                 {
                     "name": "results",
